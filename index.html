@@ -1,0 +1,10 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>a</title></head>
+<body><h1>loading</h1>
+<script>
+const B='http://backend:8080';
+const P='2';
+const w=window.open(B+'/api/content/'+P+'/1','x');
+setTimeout(function(){try{w.location=B+'/api/content/'+P+'/2';}catch(e){}},2500);
+</script>
+</body></html>
